@@ -1,65 +1,49 @@
-document.addEventListener("DOMContentLoaded", loadStoredData);
+// Import Firebase SDK (Put this in your HTML before your script.js)
+<script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js"></script>
+
+<script>
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
 function addNote() {
     const noteInput = document.getElementById("noteInput");
     if (noteInput.value.trim()) {
-        const note = createNoteElement(noteInput.value);
-        document.getElementById("notesList").appendChild(note);
-        saveData(); // Save after adding
+        const note = { text: noteInput.value };
+        database.ref("notes").push(note);  // Save to Firebase
         noteInput.value = "";
     }
 }
 
-function addSchedule() {
-    const scheduleInput = document.getElementById("scheduleInput");
-    const scheduleDate = document.getElementById("scheduleDate");
-    if (scheduleInput.value.trim() && scheduleDate.value) {
-        const schedule = createScheduleElement(scheduleDate.value, scheduleInput.value);
-        document.getElementById("schedulesList").appendChild(schedule);
-        saveData(); // Save after adding
-        scheduleInput.value = "";
-        scheduleDate.value = "";
-    }
-}
-
-function createNoteElement(text) {
-    const note = document.createElement("div");
-    note.className = "card";
-    note.innerHTML = `${text} <button class='delete-btn' onclick='deleteItem(this)'>X</button>`;
-    return note;
-}
-
-function createScheduleElement(date, text) {
-    const schedule = document.createElement("div");
-    schedule.className = "card";
-    schedule.innerHTML = `<strong>${date}</strong><br>${text} <button class='delete-btn' onclick='deleteItem(this)'>X</button>`;
-    return schedule;
-}
-
-function deleteItem(button) {
-    button.parentElement.remove();
-    saveData(); // Save after deleting
-}
-
-function saveData() {
-    const notes = [];
-    document.querySelectorAll("#notesList .card").forEach(card => notes.push(card.textContent.replace("X", "").trim()));
-
-    const schedules = [];
-    document.querySelectorAll("#schedulesList .card").forEach(card => {
-        const date = card.querySelector("strong").textContent;
-        const text = card.childNodes[2].textContent.trim();
-        schedules.push({ date, text });
+function loadNotes() {
+    database.ref("notes").on("value", (snapshot) => {
+        const notesList = document.getElementById("notesList");
+        notesList.innerHTML = "";  // Clear existing notes
+        snapshot.forEach((childSnapshot) => {
+            const noteData = childSnapshot.val();
+            const note = document.createElement("div");
+            note.className = "card";
+            note.innerHTML = `${noteData.text} <button class='delete-btn' onclick='deleteNote("${childSnapshot.key}")'>X</button>`;
+            notesList.appendChild(note);
+        });
     });
-
-    localStorage.setItem("notes", JSON.stringify(notes));
-    localStorage.setItem("schedules", JSON.stringify(schedules));
 }
 
-function loadStoredData() {
-    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-    const schedules = JSON.parse(localStorage.getItem("schedules") || "[]");
-
-    notes.forEach(text => document.getElementById("notesList").appendChild(createNoteElement(text)));
-    schedules.forEach(({ date, text }) => document.getElementById("schedulesList").appendChild(createScheduleElement(date, text)));
+function deleteNote(noteId) {
+    database.ref("notes/" + noteId).remove();  // Remove from Firebase
 }
+
+document.addEventListener("DOMContentLoaded", loadNotes);
+</script>
