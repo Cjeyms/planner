@@ -16,11 +16,13 @@ body {
     backdrop-filter: blur(10px);
 }
 .input-field {
-    width: 555px;
+    width: 100%;
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
     border: none;
+    box-sizing: border-box; /* Ensures padding does not increase width */
+    font-size: 16px;
 }
 button {
     padding: 10px 15px;
@@ -52,4 +54,10 @@ button:hover {
 
 h1 {
   text-align: center;
+}
+
+@media (max-width: 480px) {
+    .input-field {
+        font-size: 14px; /* Adjust font size for smaller screens */
+    }
 }
