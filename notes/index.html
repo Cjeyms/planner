@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="planner.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Planner ni Bakulaw</h1>
+        
+        <div class="card">
+            <h2>Add a Note</h2>
+            <textarea id="noteInput" class="input-field" placeholder="Write your note..."></textarea>
+            <button onclick="addNote()">Add Note</button>
+        </div>
+        
+        <div class="card">
+            <h2>Add a Schedule</h2>
+            <input type="date" id="scheduleDate" class="input-field">
+            <textarea id="scheduleInput" class="input-field" placeholder="Enter schedule details..."></textarea>
+            <button onclick="addSchedule()">Add Schedule</button>
+        </div>
+        
+        <h2>Notes</h2>
+        <div id="notesList"></div>
+        
+        <h2>Schedules</h2>
+        <div id="schedulesList"></div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
